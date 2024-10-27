@@ -16,7 +16,13 @@ dependencies {
          exclude module: 'opus-java'
     }
     implementation("ch.qos.logback:logback-classic:1.5.6")
-    implementation("com.zaxxer:HikariCP:6.0.0")
+    implementation 'org.hibernate.orm:hibernate-core:6.6.1.Final'
+    annotationProcessor 'org.hibernate.orm:hibernate-jpamodelgen:6.6.1.Final'
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
+    implementation 'org.glassfish:jakarta.el:4.0.2'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+    implementation 'org.hibernate.orm:hibernate-agroal:6.6.1.Final'
+    implementation 'io.agroal:agroal-pool:2.4'
 }
 
 test {

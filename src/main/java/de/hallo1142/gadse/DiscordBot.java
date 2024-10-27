@@ -19,6 +19,7 @@ public class DiscordBot {
                 .build();
         this.registerCommands(api);
         api.addEventListener(new SlashCommandEvent());
+        Database db = new Database();
     }
 
     private void registerCommands(JDA jda) {

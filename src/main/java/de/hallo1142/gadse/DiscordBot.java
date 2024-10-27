@@ -1,5 +1,6 @@
 package de.hallo1142.gadse;
 
+import de.hallo1142.gadse.events.SlashCommandEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -17,6 +18,7 @@ public class DiscordBot {
                 .setActivity(Activity.watching("Katze"))
                 .build();
         this.registerCommands(api);
+        api.addEventListener(new SlashCommandEvent());
     }
 
     private void registerCommands(JDA jda) {
@@ -55,7 +57,7 @@ public class DiscordBot {
                 Commands.slash("settings", "Einstellungen für den Bot")
                     .addSubcommands(
                             new SubcommandData("alliancecategory", "Setze die Kategorie für Allianzchannel")
-                                    .addOption(OptionType.INTEGER, "id", "Kategorie-ID")
+                                    .addOption(OptionType.INTEGER, "id", "Kategorie-ID", true)
                     )
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
         ).queue();

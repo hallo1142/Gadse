@@ -4,18 +4,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class AllianceChannelWhitelist {
 
-    public AllianceChannelWhitelist() {
-    }
-
     @Id
-    Long roleId;
+    private Long roleId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    GuildSettings guildSettings;
+    private GuildSettings guildSettings;
 
 }
 

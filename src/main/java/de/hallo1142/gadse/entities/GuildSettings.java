@@ -3,23 +3,26 @@ package de.hallo1142.gadse.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class GuildSettings {
 
-    public GuildSettings() {
-    }
-
     @Id
-    public Long guildId;
+    private Long guildId;
 
-    public Long allianceCategoryId;
+    private Long allianceCategoryId;
 
-    public Long allianceRole;
+    private Long allianceRole;
 
     @OneToMany(mappedBy = AllianceChannelWhitelist_.GUILD_SETTINGS)
-    public Set<AllianceChannelWhitelist> allianceChannelRoles;
+    private Set<AllianceChannelWhitelist> allianceChannelRoles;
 
 }

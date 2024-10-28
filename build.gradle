@@ -23,6 +23,8 @@ dependencies {
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
     implementation 'org.hibernate.orm:hibernate-agroal:6.6.1.Final'
     implementation 'io.agroal:agroal-pool:2.4'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
 
 test {

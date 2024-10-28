@@ -1,5 +1,9 @@
 package de.hallo1142.gadse;
 
+import de.hallo1142.gadse.entities.Alliance;
+import de.hallo1142.gadse.entities.AllianceChannelWhitelist;
+import de.hallo1142.gadse.entities.AllianceMember;
+import de.hallo1142.gadse.entities.GuildSettings;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
@@ -20,6 +24,10 @@ public class Database {
                     .setProperty(AvailableSettings.HIGHLIGHT_SQL, true)
                     .setProperty(AvailableSettings.AGROAL_MAX_SIZE, 5)
                     .setProperty("hibernate.agroal.providerClassName", "org.mariadb.jdbc.Driver")
+                    .addAnnotatedClass(Alliance.class)
+                    .addAnnotatedClass(AllianceChannelWhitelist.class)
+                    .addAnnotatedClass(AllianceMember.class)
+                    .addAnnotatedClass(GuildSettings.class)
                     .buildSessionFactory();
     }
 }

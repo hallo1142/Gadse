@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 public class DiscordBot {
 
@@ -58,8 +59,20 @@ public class DiscordBot {
                 Commands.slash("settings", "Einstellungen für den Bot")
                     .addSubcommands(
                             new SubcommandData("alliancecategory", "Setze die Kategorie für Allianzchannel")
-                                    .addOption(OptionType.INTEGER, "id", "Kategorie-ID", true)
+                                    .addOption(OptionType.INTEGER, "id", "Kategorie-ID", true),
+                            new SubcommandData("alliancerole", "Setze die Bündnis Rolle")
+                                    .addOption(OptionType.ROLE, "role", "Rolle die gesetzt werden soll", true)
                     )
+                        .addSubcommandGroups(
+                                new SubcommandGroupData("channelwhitelist", "Rollen die immer Bündnischanneln hinzugefügt werden sollen")
+                                        .addSubcommands(
+                                                new SubcommandData("list", "Liste der aktuellen Rollen in der Channelwhitelist"),
+                                                new SubcommandData("add", "Füge eine Rolle der Channelwhitelist hinzu")
+                                                        .addOption(OptionType.ROLE, "role", "Rolle die hinzugefügt werden soll", true),
+                                                new SubcommandData("remove", "Entferne eine Rolle aus der Channelwhitelist")
+                                                        .addOption(OptionType.ROLE, "role", "Rolle die entfernt werden soll", true)
+                                        )
+                        )
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
         ).queue();
     }

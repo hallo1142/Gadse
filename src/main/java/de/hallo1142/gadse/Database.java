@@ -11,8 +11,10 @@ import org.hibernate.tool.schema.Action;
 
 public class Database {
 
+    private final SessionFactory sessionFactory;
+
     public Database() {
-            SessionFactory sessionFactory = new Configuration()
+        sessionFactory = new Configuration()
                     .setProperty(AvailableSettings.JAKARTA_JDBC_URL, "jdbc:mariadb://localhost:3306/gadse")
                     .setProperty(AvailableSettings.JAKARTA_JDBC_USER, "gadse")
                     .setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, "gadse")
@@ -29,5 +31,9 @@ public class Database {
                     .addAnnotatedClass(AllianceMember.class)
                     .addAnnotatedClass(GuildSettings.class)
                     .buildSessionFactory();
+    }
+
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 }

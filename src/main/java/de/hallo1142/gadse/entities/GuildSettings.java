@@ -13,13 +13,13 @@ public class GuildSettings {
     }
 
     @Id
-    Long guildId;
+    public Long guildId;
 
-    Long allianceCategoryId;
+    public Long allianceCategoryId;
 
-    Long allianceRole;
+    public Long allianceRole;
 
     @OneToMany(mappedBy = AllianceChannelWhitelist_.GUILD_SETTINGS)
-    Set<AllianceChannelWhitelist> allianceChannelRoles;
+    public Set<AllianceChannelWhitelist> allianceChannelRoles;
 
 }

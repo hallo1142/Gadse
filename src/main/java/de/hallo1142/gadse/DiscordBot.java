@@ -19,8 +19,8 @@ public class DiscordBot {
                 .setActivity(Activity.watching("Katze"))
                 .build();
         this.registerCommands(api);
-        api.addEventListener(new SlashCommandEvent());
         Database db = new Database();
+        api.addEventListener(new SlashCommandEvent(db));
     }
 
     private void registerCommands(JDA jda) {
@@ -59,7 +59,7 @@ public class DiscordBot {
                 Commands.slash("settings", "Einstellungen für den Bot")
                     .addSubcommands(
                             new SubcommandData("alliancecategory", "Setze die Kategorie für Allianzchannel")
-                                    .addOption(OptionType.INTEGER, "id", "Kategorie-ID", true),
+                                    .addOption(OptionType.STRING, "id", "Kategorie-ID", true),
                             new SubcommandData("alliancerole", "Setze die Bündnis Rolle")
                                     .addOption(OptionType.ROLE, "role", "Rolle die gesetzt werden soll", true)
                     )

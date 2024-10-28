@@ -1,5 +1,6 @@
 package de.hallo1142.gadse.events;
 
+import de.hallo1142.gadse.Database;
 import de.hallo1142.gadse.commands.AllianceAdminCommand;
 import de.hallo1142.gadse.commands.AllianceCommand;
 import de.hallo1142.gadse.commands.CommandExecutor;
@@ -12,9 +13,11 @@ import java.util.HashMap;
 public class SlashCommandEvent extends ListenerAdapter {
 
     private final HashMap<String, CommandExecutor> commands = new HashMap<>();
+    private final Database database;
 
-    public SlashCommandEvent() {
-        this.commands.put("settings", new SettingsCommand());
+    public SlashCommandEvent(Database database) {
+        this.database = database;
+        this.commands.put("settings", new SettingsCommand(this.database));
         this.commands.put("allianceadmin", new AllianceAdminCommand());
         this.commands.put("alliance", new AllianceCommand());
     }

@@ -16,13 +16,15 @@ import java.util.Set;
 public class Alliance {
 
     @Id
-    String name;
+    private String name;
 
-    Long channelId;
+    private Long textChannelId;
 
-    Long roleId;
+    private Long voiceChannelId;
+
+    private Long roleId;
 
     @OneToMany(mappedBy = AllianceMember_.ALLIANCE)
-    Set<AllianceMember> allianceMembers;
+    private Set<AllianceMember> allianceMembers;
 
 }

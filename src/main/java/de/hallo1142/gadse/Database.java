@@ -20,7 +20,7 @@ public class Database {
                     .setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, "gadse")
                     // Remove on Live
                     .setProperty(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
-                            Action.SPEC_ACTION_DROP_AND_CREATE)
+                            Action.NONE)
                     .setProperty(AvailableSettings.SHOW_SQL, true)
                     .setProperty(AvailableSettings.FORMAT_SQL, true)
                     .setProperty(AvailableSettings.HIGHLIGHT_SQL, true)

@@ -59,7 +59,6 @@ public class AllianceAdminCommand extends CommandExecutor{
                 return;
             }
 
-            //ToDO Fix search
             AllianceMemberId allianceMemberId = new AllianceMemberId();
             allianceMemberId.setGuildId(event.getGuild().getIdLong());
             allianceMemberId.setUserId(member.getIdLong());
@@ -109,6 +108,7 @@ public class AllianceAdminCommand extends CommandExecutor{
                     .setDescription("<a:catYes:1300217972324962380> Du hast " + member.getAsMention() + " zu `" + name + "` als Admin hinzugefügt.")
                     .build()).setEphemeral(true).queue();
 
+            session.getTransaction().commit();
         } catch (Exception e) {
             event.getHook().sendMessageEmbeds(new EmbedBuilder()
                     .setColor(Color.RED)

@@ -1,11 +1,10 @@
 package de.hallo1142.gadse.commands;
 
 import de.hallo1142.gadse.Database;
-import de.hallo1142.gadse.entities.Alliance;
-import de.hallo1142.gadse.entities.AllianceChannelWhitelist;
-import de.hallo1142.gadse.entities.GuildSettings;
+import de.hallo1142.gadse.entities.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -33,9 +32,90 @@ public class AllianceAdminCommand extends CommandExecutor{
             case "create":
                 this.handleAllianceCreate(event);
                 break;
+            case "addadmin":
+                this.handleAllianceAdminAdd(event);
+                break;
             default:
                 System.err.println("Unknown allianceadmin subcommand: " + event.getSubcommandName());
                 break;
+        }
+    }
+
+    private void handleAllianceAdminAdd(SlashCommandInteractionEvent event) {
+        event.deferReply().setEphemeral(true).queue();
+        String name = event.getOption("name").getAsString();
+        Member member = event.getOption("user").getAsMember();
+
+        try (Session session = database.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            Alliance alliance = session.find(Alliance.class, name);
+            GuildSettings settings = session.find(GuildSettings.class, event.getGuild().getId());
+            if (alliance == null) {
+                event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.RED)
+                        .setTitle("Allianz existiert nicht")
+                        .setDescription("<a:catNo:1300217987675979917> Die angegebene Allianz existiert nicht.")
+                        .build()).setEphemeral(true).queue();
+                return;
+            }
+
+            //ToDO Fix search
+            AllianceMemberId allianceMemberId = new AllianceMemberId();
+            allianceMemberId.setGuildId(event.getGuild().getIdLong());
+            allianceMemberId.setUserId(member.getIdLong());
+            AllianceMember allianceMember = session.find(AllianceMember.class, allianceMemberId);
+
+            if (allianceMember != null) {
+                event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.RED)
+                        .setTitle("Spieler bereits in einem Bündnis")
+                        .setDescription("<a:catNo:1300217987675979917> Dieser Spieler ist bereits in einem Bündnis.")
+                        .build()).setEphemeral(true).queue();
+                return;
+            }
+
+            AllianceMember allianceMember1 = new AllianceMember();
+            allianceMember1.setGuildId(event.getGuild().getIdLong());
+            allianceMember1.setUserId(member.getIdLong());
+            allianceMember1.setAdmin(true);
+            allianceMember1.setAlliance(alliance);
+
+            session.persist(allianceMember1);
+
+            if (settings != null && settings.getAllianceRole() != null) {
+                Role role = event.getGuild().getRoleById(settings.getAllianceRole());
+                if (role != null) {
+                    event.getGuild().addRoleToMember(member, role).queue();
+                }
+            }
+
+            Role role = event.getGuild().getRoleById(alliance.getRoleId());
+            if (role != null) {
+                event.getGuild().addRoleToMember(member, role).queue();
+            }
+
+            TextChannel textChannel = event.getGuild().getTextChannelById(alliance.getTextChannelId());
+            if (textChannel != null) {
+                textChannel.sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.GREEN)
+                        .setTitle("Neues Mitglied")
+                        .setDescription(member.getAsMention() + " wurde von " + event.getMember().getAsMention() + " als Admin hinzugefügt.")
+                        .build()).queue();
+            }
+
+            event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.GREEN)
+                    .setTitle("Mitglied hinzugefügt")
+                    .setDescription("<a:catYes:1300217972324962380> Du hast " + member.getAsMention() + " zu `" + name + "` als Admin hinzugefügt.")
+                    .build()).setEphemeral(true).queue();
+
+        } catch (Exception e) {
+            event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.RED)
+                    .setTitle("Fehler")
+                    .setDescription("<a:catNo:1300217987675979917> Es ist ein Fehler aufgetreten.")
+                    .build()).setEphemeral(true).queue();
+            e.printStackTrace();
         }
     }
 

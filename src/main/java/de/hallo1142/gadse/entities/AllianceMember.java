@@ -1,9 +1,6 @@
 package de.hallo1142.gadse.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,14 +9,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@IdClass(AllianceMemberId.class)
 public class AllianceMember {
 
     @Id
-    Long userId;
+    private Long userId;
 
-    boolean isAdmin;
+    @Id
+    private Long guildId;
+
+    private boolean isAdmin;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Alliance alliance;
+    private Alliance alliance;
 
 }

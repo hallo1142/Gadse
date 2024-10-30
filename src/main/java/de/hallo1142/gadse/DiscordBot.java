@@ -38,9 +38,7 @@ public class DiscordBot {
                                         .addOption(OptionType.BOOLEAN, "admin", "Legt fest ob der User als Admin hinzugefügt werden soll", true),
                                 new SubcommandData("removemember", "Entfernt ein Mitglied aus einer Allianz")
                                         .addOption(OptionType.STRING, "name", "Name der Allianz", true)
-                                        .addOption(OptionType.USER, "user", "User welcher als Mitglied entfernt werden soll", true),
-                                new SubcommandData("info", "Info über eine Allianz")
-                                        .addOption(OptionType.STRING, "name", "Name der Allianz", true)
+                                        .addOption(OptionType.USER, "user", "User welcher als Mitglied entfernt werden soll", true)
                         )
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_ROLES)),
                 Commands.slash("alliance", "User-Commands für bestehende Allianzen")
@@ -48,8 +46,7 @@ public class DiscordBot {
                                 new SubcommandData("addmember", "Fügt deiner Allianz ein Mitglied hinzu")
                                         .addOption(OptionType.USER, "user", "User der hinzugefügt werden soll", true),
                                 new SubcommandData("removemember", "Entferne ein Mitglied aus deiner Allianz")
-                                        .addOption(OptionType.USER, "user", "User der entfernt werden soll", true),
-                                new SubcommandData("info", "Info über deine Allianz")
+                                        .addOption(OptionType.USER, "user", "User der entfernt werden soll", true)
                         ),
                 Commands.slash("settings", "Einstellungen für den Bot")
                     .addSubcommands(

@@ -2,6 +2,10 @@ package de.hallo1142.gadse.commands;
 
 import de.hallo1142.gadse.Database;
 import de.hallo1142.gadse.entities.*;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,6 +21,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.List;
 
 public class AllianceAdminCommand extends CommandExecutor{
 
@@ -42,9 +47,56 @@ public class AllianceAdminCommand extends CommandExecutor{
             case "delete":
                 this.handleAllianceDelete(event);
                 break;
+            case "list":
+                this.handleAllianceList(event);
+                break;
             default:
                 System.err.println("Unknown allianceadmin subcommand: " + event.getSubcommandName());
                 break;
+        }
+    }
+
+    private void handleAllianceList(SlashCommandInteractionEvent event) {
+        event.deferReply().setEphemeral(true).queue();
+        try (Session session = database.getSessionFactory().openSession()) {
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Alliance> cq = cb.createQuery(Alliance.class);
+            Root<Alliance> rootEntry = cq.from(Alliance.class);
+            CriteriaQuery<Alliance> all = cq.select(rootEntry);
+
+            TypedQuery<Alliance> allQuery = session.createQuery(all);
+            List<Alliance> list = allQuery.getResultList();
+
+            if (list.isEmpty()) {
+                event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.RED)
+                        .setTitle("Keine Allianzen gefunden")
+                        .setDescription("<a:catNo:1300217987675979917> Es konnten keine Allianzen gefunden werden.")
+                        .build()).setEphemeral(true).queue();
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder("```\n");
+
+            list.forEach(alliance -> {
+                sb.append(alliance.getName()).append("\n");
+            });
+            sb.append("```");
+
+            event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.GREEN)
+                    .setTitle("Liste der Allianzen")
+                    .setDescription(sb)
+                    .build()).setEphemeral(true).queue();
+
+        } catch (Exception e) {
+            event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.RED)
+                    .setTitle("Fehler")
+                    .setDescription("<a:catNo:1300217987675979917> Es ist ein Fehler aufgetreten.")
+                    .build()).setEphemeral(true).queue();
+            e.printStackTrace();
         }
     }
 
@@ -100,7 +152,7 @@ public class AllianceAdminCommand extends CommandExecutor{
             event.getHook().sendMessageEmbeds(new EmbedBuilder()
                     .setColor(Color.GREEN)
                     .setTitle("Allianz gelöscht")
-                    .setDescription("<a:catYes:1300217972324962380> Du hast das Bündnis `" + name +  "` gelöscht.")
+                    .setDescription("<a:catYes:1300217972324962380> Du hast die Allianz `" + name +  "` gelöscht.")
                     .build()).setEphemeral(true).queue();
 
             session.getTransaction().commit();
@@ -143,7 +195,7 @@ public class AllianceAdminCommand extends CommandExecutor{
                 event.getHook().sendMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.RED)
                         .setTitle("User nicht gefunden")
-                        .setDescription("<a:catNo:1300217987675979917> Dieser User ist nicht in diesem Bündnis.")
+                        .setDescription("<a:catNo:1300217987675979917> Dieser User ist nicht in dieser Allianz.")
                         .build()).setEphemeral(true).queue();
                 return;
             }
@@ -216,8 +268,8 @@ public class AllianceAdminCommand extends CommandExecutor{
             if (allianceMember != null) {
                 event.getHook().sendMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.RED)
-                        .setTitle("User bereits in einem Bündnis")
-                        .setDescription("<a:catNo:1300217987675979917> Dieser User ist bereits in einem Bündnis.")
+                        .setTitle("User bereits in einer Allianz")
+                        .setDescription("<a:catNo:1300217987675979917> Dieser User ist bereits in einer Allianz.")
                         .build()).setEphemeral(true).queue();
                 return;
             }
@@ -347,8 +399,8 @@ public class AllianceAdminCommand extends CommandExecutor{
                     .setColor(Color.CYAN)
                     .setTitle("Herzlich Willkommen")
                     .setDescription("Dies ist der private Channel für euren Clan **" + name + "**. Hier könnt ihr euch mit uns privat austauschen.")
-                    .addField("Bündnis-Admins", "Ihr könnt einen oder mehrere Admins haben. Diese können selbstständig neue Mitglieder auf unserem Discord eurem Bündnis hinzufügen. Neue Admins können nur durch uns angelegt werden. Wendet euch hierzu bitte an einen <@&1299823398926680135>.", false)
-                    .addField("Bündnis-Verwaltung", "Folgende Befehle stehen zur Verfügung:\n```\n/alliance addmember - Fügt dem Bündnis ein Mitglied hinzu.\n/alliance removemember - Entfernt ein Mitglied aus dem Bündnis.\n/alliance info - Zeigt eine Kurzinfo zum Bündnis.\n```", false)
+                    .addField("Allianz-Admins", "Ihr könnt einen oder mehrere Admins haben. Diese können selbstständig neue Mitglieder auf unserem Discord eurer Allianz hinzufügen. Neue Admins können nur durch uns angelegt werden. Wendet euch hierzu bitte an einen <@&1299823398926680135>.", false)
+                    .addField("Allianz-Verwaltung", "Folgende Befehle stehen zur Verfügung:\n```\n/alliance addmember - Fügt der Allianz ein Mitglied hinzu.\n/alliance removemember - Entfernt ein Mitglied aus der Allianz.\n```", false)
                     .build()).complete().pin().queue();
 
             session.getTransaction().commit();

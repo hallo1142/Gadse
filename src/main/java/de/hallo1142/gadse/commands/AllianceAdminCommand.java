@@ -16,6 +16,7 @@ import org.hibernate.Session;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class AllianceAdminCommand extends CommandExecutor{
 
@@ -35,10 +36,87 @@ public class AllianceAdminCommand extends CommandExecutor{
             case "addmember":
                 this.handleAllianceMemberAdd(event);
                 break;
+            case "removemember":
+                this.handleAllianceMemberRemove(event);
+                break;
             default:
                 System.err.println("Unknown allianceadmin subcommand: " + event.getSubcommandName());
                 break;
         }
+    }
+
+    private void handleAllianceMemberRemove(SlashCommandInteractionEvent event) {
+        event.deferReply().setEphemeral(true).queue();
+        String name = event.getOption("name").getAsString();
+        Member member = event.getOption("user").getAsMember();
+
+        try (Session session = database.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            Alliance alliance = session.find(Alliance.class, name);
+            GuildSettings settings = session.find(GuildSettings.class, event.getGuild().getId());
+            if (alliance == null) {
+                event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.RED)
+                        .setTitle("Allianz existiert nicht")
+                        .setDescription("<a:catNo:1300217987675979917> Die angegebene Allianz existiert nicht.")
+                        .build()).setEphemeral(true).queue();
+                return;
+            }
+
+            AllianceMemberId allianceMemberId = new AllianceMemberId();
+            allianceMemberId.setGuildId(event.getGuild().getIdLong());
+            allianceMemberId.setUserId(member.getIdLong());
+            AllianceMember allianceMember = session.find(AllianceMember.class, allianceMemberId);
+
+            if (allianceMember == null || !Objects.equals(allianceMember.getAlliance().getName(), name)) {
+                event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.RED)
+                        .setTitle("User nicht gefunden")
+                        .setDescription("<a:catNo:1300217987675979917> Dieser User ist nicht in diesem Bündnis.")
+                        .build()).setEphemeral(true).queue();
+                return;
+            }
+
+            if (settings != null && settings.getAllianceRole() != null) {
+                Role role = event.getGuild().getRoleById(settings.getAllianceRole());
+                if (role != null) {
+                    event.getGuild().removeRoleFromMember(member, role).queue();
+                }
+            }
+
+            Role role = event.getGuild().getRoleById(alliance.getRoleId());
+            if (role != null) {
+                event.getGuild().removeRoleFromMember(member, role).queue();
+            }
+
+            session.remove(allianceMember);
+
+            TextChannel textChannel = event.getGuild().getTextChannelById(alliance.getTextChannelId());
+            if (textChannel != null) {
+                textChannel.sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.RED)
+                        .setTitle("Mitglied entfernt")
+                        .setDescription(member.getAsMention() + " wurde von " + event.getMember().getAsMention() + " entfernt.")
+                        .build()).queue();
+            }
+
+            event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.RED)
+                    .setTitle("Mitglied entfernt")
+                    .setDescription("<a:catYes:1300217972324962380> Du hast " + member.getAsMention() + " aus `" + name + "` entfernt.")
+                    .build()).setEphemeral(true).queue();
+
+            session.getTransaction().commit();
+       } catch (Exception e) {
+            event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.RED)
+                    .setTitle("Fehler")
+                    .setDescription("<a:catNo:1300217987675979917> Es ist ein Fehler aufgetreten.")
+                    .build()).setEphemeral(true).queue();
+            e.printStackTrace();
+        }
+
     }
 
     private void handleAllianceMemberAdd(SlashCommandInteractionEvent event) {
@@ -68,8 +146,8 @@ public class AllianceAdminCommand extends CommandExecutor{
             if (allianceMember != null) {
                 event.getHook().sendMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.RED)
-                        .setTitle("Spieler bereits in einem Bündnis")
-                        .setDescription("<a:catNo:1300217987675979917> Dieser Spieler ist bereits in einem Bündnis.")
+                        .setTitle("User bereits in einem Bündnis")
+                        .setDescription("<a:catNo:1300217987675979917> Dieser User ist bereits in einem Bündnis.")
                         .build()).setEphemeral(true).queue();
                 return;
             }

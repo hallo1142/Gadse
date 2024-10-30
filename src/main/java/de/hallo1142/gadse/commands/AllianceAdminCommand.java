@@ -32,8 +32,8 @@ public class AllianceAdminCommand extends CommandExecutor{
             case "create":
                 this.handleAllianceCreate(event);
                 break;
-            case "addadmin":
-                this.handleAllianceAdminAdd(event);
+            case "addmember":
+                this.handleAllianceMemberAdd(event);
                 break;
             default:
                 System.err.println("Unknown allianceadmin subcommand: " + event.getSubcommandName());
@@ -41,10 +41,11 @@ public class AllianceAdminCommand extends CommandExecutor{
         }
     }
 
-    private void handleAllianceAdminAdd(SlashCommandInteractionEvent event) {
+    private void handleAllianceMemberAdd(SlashCommandInteractionEvent event) {
         event.deferReply().setEphemeral(true).queue();
         String name = event.getOption("name").getAsString();
         Member member = event.getOption("user").getAsMember();
+        boolean isAdmin = event.getOption("admin").getAsBoolean();
 
         try (Session session = database.getSessionFactory().openSession()) {
             session.beginTransaction();
@@ -76,7 +77,7 @@ public class AllianceAdminCommand extends CommandExecutor{
             AllianceMember allianceMember1 = new AllianceMember();
             allianceMember1.setGuildId(event.getGuild().getIdLong());
             allianceMember1.setUserId(member.getIdLong());
-            allianceMember1.setAdmin(true);
+            allianceMember1.setAdmin(isAdmin);
             allianceMember1.setAlliance(alliance);
 
             session.persist(allianceMember1);
@@ -98,14 +99,14 @@ public class AllianceAdminCommand extends CommandExecutor{
                 textChannel.sendMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.GREEN)
                         .setTitle("Neues Mitglied")
-                        .setDescription(member.getAsMention() + " wurde von " + event.getMember().getAsMention() + " als Admin hinzugefügt.")
+                        .setDescription(member.getAsMention() + " wurde von " + event.getMember().getAsMention() + " als " + (isAdmin ? "Admin" : "Mitglied") + " hinzugefügt.")
                         .build()).queue();
             }
 
             event.getHook().sendMessageEmbeds(new EmbedBuilder()
                     .setColor(Color.GREEN)
                     .setTitle("Mitglied hinzugefügt")
-                    .setDescription("<a:catYes:1300217972324962380> Du hast " + member.getAsMention() + " zu `" + name + "` als Admin hinzugefügt.")
+                    .setDescription("<a:catYes:1300217972324962380> Du hast " + member.getAsMention() + " zu `" + name + "` als " + (isAdmin ? "Admin" : "Mitglied") + " hinzugefügt.")
                     .build()).setEphemeral(true).queue();
 
             session.getTransaction().commit();

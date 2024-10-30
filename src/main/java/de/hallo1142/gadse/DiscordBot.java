@@ -32,18 +32,13 @@ public class DiscordBot {
                                 new SubcommandData("delete", "Löscht eine Allianz")
                                         .addOption(OptionType.STRING, "name", "Name der Allianz", true),
                                 new SubcommandData("list", "Liste der aktuellen Allianzen"),
-                                new SubcommandData("addadmin", "Fügt einer Allianz einen Admin hinzu")
-                                        .addOption(OptionType.STRING, "name", "Name der Allianz", true)
-                                        .addOption(OptionType.USER, "user", "User welcher als Admin angelegt werden soll", true),
-                                new SubcommandData("removeadmin", "Entferne einen Admin einer Allianz")
-                                        .addOption(OptionType.STRING, "name", "Name der Allianz", true)
-                                        .addOption(OptionType.USER, "user", "User welcher als Admin entfernt werden soll", true),
                                 new SubcommandData("addmember", "Fügt ein Mitglied einer Allianz hinzu")
                                         .addOption(OptionType.STRING, "name", "Name der Allianz", true)
-                                        .addOption(OptionType.USER, "user", "User welcher als Mitglied hinzugeügt werden soll", true),
+                                        .addOption(OptionType.USER, "user", "User welcher als Mitglied hinzugeügt werden soll", true)
+                                        .addOption(OptionType.BOOLEAN, "admin", "Legt fest ob der User als Admin hinzugefügt werden soll", true),
                                 new SubcommandData("removemember", "Entfernt ein Mitglied aus einer Allianz")
                                         .addOption(OptionType.STRING, "name", "Name der Allianz", true)
-                                        .addOption(OptionType.USER, "user", "User welcher als Mitglied entfernt werden soll"),
+                                        .addOption(OptionType.USER, "user", "User welcher als Mitglied entfernt werden soll", true),
                                 new SubcommandData("info", "Info über eine Allianz")
                                         .addOption(OptionType.STRING, "name", "Name der Allianz", true)
                         )

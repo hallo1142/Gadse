@@ -49,7 +49,7 @@ public class AllianceAdminCommand extends CommandExecutor{
     }
 
     private void handleAllianceDelete(SlashCommandInteractionEvent event) {
-        event.deferReply().queue();
+        event.deferReply().setEphemeral(true).queue();
         String name = event.getOption("name").getAsString();
 
         try (Session session = database.getSessionFactory().openSession()) {

@@ -1,5 +1,6 @@
 package de.hallo1142.gadse.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -24,7 +25,7 @@ public class Alliance {
 
     private Long roleId;
 
-    @OneToMany(mappedBy = AllianceMember_.ALLIANCE)
+    @OneToMany(mappedBy = AllianceMember_.ALLIANCE, cascade = CascadeType.ALL)
     private Set<AllianceMember> allianceMembers;
 
 }

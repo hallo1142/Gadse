@@ -39,10 +39,80 @@ public class AllianceAdminCommand extends CommandExecutor{
             case "removemember":
                 this.handleAllianceMemberRemove(event);
                 break;
+            case "delete":
+                this.handleAllianceDelete(event);
+                break;
             default:
                 System.err.println("Unknown allianceadmin subcommand: " + event.getSubcommandName());
                 break;
         }
+    }
+
+    private void handleAllianceDelete(SlashCommandInteractionEvent event) {
+        event.deferReply().queue();
+        String name = event.getOption("name").getAsString();
+
+        try (Session session = database.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            Alliance alliance = session.find(Alliance.class, name);
+            GuildSettings settings = session.find(GuildSettings.class, event.getGuild().getId());
+            if (alliance == null) {
+                event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.RED)
+                        .setTitle("Allianz existiert nicht")
+                        .setDescription("<a:catNo:1300217987675979917> Die angegebene Allianz existiert nicht.")
+                        .build()).setEphemeral(true).queue();
+                return;
+            }
+
+            Role role = event.getGuild().getRoleById(alliance.getRoleId());
+            if (role != null) {
+                role.delete().queue();
+            }
+
+            if (settings != null && settings.getAllianceRole() != null) {
+                Role role1 = event.getGuild().getRoleById(settings.getAllianceRole());
+                if (role1 != null) {
+                    if (alliance.getAllianceMembers() != null && !alliance.getAllianceMembers().isEmpty()) {
+                        for (AllianceMember allianceMember : alliance.getAllianceMembers()) {
+                            Member member = event.getGuild().getMemberById(allianceMember.getUserId());
+                            if (member != null) {
+                                event.getGuild().removeRoleFromMember(member, role1).queue();
+                            }
+                        }
+                    }
+                }
+            }
+
+            TextChannel textChannel = event.getGuild().getTextChannelById(alliance.getTextChannelId());
+            if (textChannel != null) {
+                textChannel.delete().queue();
+            }
+
+            VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById(alliance.getVoiceChannelId());
+            if (voiceChannel != null) {
+                voiceChannel.delete().queue();
+            }
+
+            session.remove(alliance);
+
+            event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.GREEN)
+                    .setTitle("Allianz gelöscht")
+                    .setDescription("<a:catYes:1300217972324962380> Du hast das Bündnis `" + name +  "` gelöscht.")
+                    .build()).setEphemeral(true).queue();
+
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            event.getHook().sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.RED)
+                    .setTitle("Fehler")
+                    .setDescription("<a:catNo:1300217987675979917> Es ist ein Fehler aufgetreten.")
+                    .build()).setEphemeral(true).queue();
+            e.printStackTrace();
+        }
+
     }
 
     private void handleAllianceMemberRemove(SlashCommandInteractionEvent event) {
@@ -102,7 +172,7 @@ public class AllianceAdminCommand extends CommandExecutor{
             }
 
             event.getHook().sendMessageEmbeds(new EmbedBuilder()
-                    .setColor(Color.RED)
+                    .setColor(Color.GREEN)
                     .setTitle("Mitglied entfernt")
                     .setDescription("<a:catYes:1300217972324962380> Du hast " + member.getAsMention() + " aus `" + name + "` entfernt.")
                     .build()).setEphemeral(true).queue();

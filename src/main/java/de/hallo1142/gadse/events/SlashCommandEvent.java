@@ -19,7 +19,7 @@ public class SlashCommandEvent extends ListenerAdapter {
         this.database = database;
         this.commands.put("settings", new SettingsCommand(this.database));
         this.commands.put("allianceadmin", new AllianceAdminCommand(this.database));
-        this.commands.put("alliance", new AllianceCommand());
+        this.commands.put("alliance", new AllianceCommand(this.database));
     }
 
     @Override

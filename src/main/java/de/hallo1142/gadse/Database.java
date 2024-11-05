@@ -17,7 +17,7 @@ public class Database {
         sessionFactory = new Configuration()
                     .setProperty(AvailableSettings.JAKARTA_JDBC_URL, "jdbc:mariadb://localhost:3306/gadse")
                     .setProperty(AvailableSettings.JAKARTA_JDBC_USER, "gadse")
-                    .setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, "gadse")
+                    .setProperty(AvailableSettings.JAKARTA_JDBC_PASSWORD, System.getenv("DATABASE_PASSWORD"))
                     // Remove on Live
                     .setProperty(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
                             Action.NONE)

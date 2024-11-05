@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'de.hallo1142'
@@ -30,3 +31,13 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'de.hallo1142.gadse.GadseBot'
+        )
+    }
+}
+
+build.dependsOn shadowJar

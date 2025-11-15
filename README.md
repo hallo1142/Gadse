@@ -1,3 +1,3 @@
 # Gadse Discord Bot
 
-This was a small discord bot for "Luigi Clan". Currently it's not used but you are free to check it out.
+This was a small discord bot for "Luigi Clan" which managed alliances. Currently it's not used but you are free to check it out.
